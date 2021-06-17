@@ -24,12 +24,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^8.0",
-        "azjezz/psl": "^1.7"
+        "php": "^8.0"
     },
     "require-dev": {
         "pestphp/pest": "^1.4",
-        "symfony/var-dumper": "^5.3",
         "vimeo/psalm": "^4.7"
     },
     "scripts": {

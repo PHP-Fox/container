@@ -41,6 +41,9 @@
         "test": "Run pestPHP test suite on project.",
         "test-coverage": "Run pestPHP test suite with coverage report on project."
     },
+    "provide": {
+        "psr/container-implementation": "^1.0"
+    },
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true

@@ -19,7 +19,7 @@ class Container
     protected array $bindings = [];
 
     /** @var object[] */
-    protected array $instances = [];
+    private array $instances = [];
 
     private function __construct() {}
 
@@ -76,6 +76,11 @@ class Container
         }
 
         return $object;
+    }
+
+    public function has(string $abstract): bool
+    {
+        return array_key_exists($abstract, $this->bindings);
     }
 
     public function build(Closure|string $concrete): mixed

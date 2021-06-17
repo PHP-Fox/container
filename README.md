@@ -18,8 +18,8 @@ To use the container, all you need to do is:
 ```php
 $container = Container::getInstance();
 
-$container->add(
-    id: Abstract::class,
+$container->bind(
+    abstract: Abstract::class,
     concrete: Concrete::class,
     shared: false, // defaults to false - true turns this into a singleton.
 );
@@ -35,6 +35,8 @@ $exists = $container->has(
  * @var Concrete
  */
 $concrete = $container->make(
-    id: Abstract::class,
+    abstract: Abstract::class,
 );
 ```
+
+Container implementation inspired by [example repo](https://github.com/jessarcher/service-container-from-scratch) from [Jess Archer](https://github.com/jessarcher), which provides a great and simple base. 

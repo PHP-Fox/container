@@ -156,7 +156,7 @@ it('can check if the container contains a binding', function () {
     $container->flush();
 
     assertFalse(
-        condition: $container->has(
+        condition: $container->contains(
             abstract: ArrayMailer::class,
         ),
     );
@@ -166,7 +166,7 @@ it('can check if the container contains a binding', function () {
     );
 
     assertTrue(
-        condition: $container->has(
+        condition: $container->contains(
             abstract: ArrayMailer::class,
         ),
     );
@@ -220,6 +220,28 @@ it('implements ArrayAccess properly', function () {
         condition: isset($container[ArrayMailer::class]),
     );
 
+});
+
+it('implements ContainerInterface for PSR-11 properly', function () {
+    $container = Container::getInstance();
+    $container->flush();
+
+    $container->bind(
+        abstract: ArrayMailer::class,
+    );
+
+    assertInstanceOf(
+        expected: ArrayMailer::class,
+        actual: $container->get(
+            id: ArrayMailer::class,
+        ),
+    );
+
+    assertTrue(
+        condition: $container->has(
+            id: ArrayMailer::class,
+        ),
+    );
 });
 
 

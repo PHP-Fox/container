@@ -7,23 +7,52 @@ namespace PHPFox\Container;
 use ArrayAccess;
 use Closure;
 use PHPFox\Container\Exceptions\BindingResolutionException;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 
-class Container implements ArrayAccess
+class Container implements ArrayAccess, ContainerInterface
 {
-    /** @var static */
+    /**
+     * The Container Instance
+     *
+     * @var Container
+     */
     protected static Container $instance;
 
-    /** @var array[] */
+    /**
+     * The Container bindings, things that have been added to our container.
+     * [
+     *      'abstract class' => [
+     *          'concrete' => 'concrete class',
+     *          'shared' => 'true|false'
+     *      ]
+     * ]
+     *
+     * @var array[]
+     */
     protected array $bindings = [];
 
-    /** @var object[] */
+    /**
+     * Resolved Instances for the Container
+     *
+     * @var object[]
+     */
     private array $instances = [];
 
+    /**
+     * Container constructor.
+     *
+     * @return void
+     */
     private function __construct() {}
 
+    /**
+     * Get an Instance of the Container, or create a new instance
+     *
+     * @return static
+     */
     public static function getInstance(): static
     {
         if (! isset(static::$instance)) {
@@ -33,6 +62,15 @@ class Container implements ArrayAccess
         return static::$instance;
     }
 
+    /**
+     * Bind a new item into the Container
+     *
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     * @param bool $shared
+     *
+     * @return void
+     */
     public function bind(string $abstract, Closure|string|null $concrete = null, bool $shared = false): void
     {
         $this->bindings[$abstract] = [
@@ -41,16 +79,41 @@ class Container implements ArrayAccess
         ];
     }
 
+    /**
+     * Bind a singleton into the Container
+     *
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     *
+     * @return void
+     */
     public function singleton(string $abstract, Closure|string|null $concrete = null): void
     {
         $this->bind($abstract, $concrete, true);
     }
 
+    /**
+     * Add a new built instance into the Container, for easy access
+     *
+     * @param string $abstract
+     * @param mixed $instance
+     *
+     * @return void
+     */
     public function instance(string $abstract, mixed $instance): void
     {
         $this->instances[$abstract] = $instance;
     }
 
+    /**
+     * Retrieve an item from the Container, if possible.
+     *
+     * @param string $abstract
+     *
+     * @return mixed
+     *
+     * @throws BindingResolutionException
+     */
     public function make(string $abstract): mixed
     {
         // 1. If the type has already been resolved as a singleton, just return it
@@ -79,16 +142,40 @@ class Container implements ArrayAccess
         return $object;
     }
 
-    public function has(string $abstract): bool
+    /**
+     * Check if the Container contains an item.
+     *
+     * @param string $abstract
+     *
+     * @return bool
+     */
+    public function contains(string $abstract): bool
     {
         return array_key_exists($abstract, $this->bindings);
     }
 
+    /**
+     * Remove an item from the Container
+     *
+     * @param string $abstract
+     *
+     * @return void
+     */
     public function remove(string $abstract): void
     {
         unset($this->bindings[$abstract]);
     }
 
+    /**
+     * Build an item in the Container
+     *
+     * @param Closure|string $concrete
+     *
+     * @return mixed
+     *
+     * @throws BindingResolutionException
+     * @throws ReflectionException
+     */
     public function build(Closure|string $concrete): mixed
     {
         if ($concrete instanceof Closure) {
@@ -118,6 +205,15 @@ class Container implements ArrayAccess
         return $reflector->newInstanceArgs($instances);
     }
 
+    /**
+     * Build any dependencies for an item in the Container
+     *
+     * @param array $dependencies
+     *
+     * @return array
+     *
+     * @throws BindingResolutionException
+     */
     protected function resolveDependencies(array $dependencies): array
     {
         $results = [];
@@ -137,27 +233,56 @@ class Container implements ArrayAccess
         return $results;
     }
 
+    /**
+     * Flush the contents of the container
+     *
+     * @return void
+     */
     public function flush(): void
     {
         $this->bindings = [];
         $this->instances = [];
     }
 
+    /**
+     * ArrayAccess: Check if the Container contains an item.
+     *
+     * @param mixed $offset
+     *
+     * @return bool
+     */
     public function offsetExists($offset): bool
     {
-        return $this->has(
+        return $this->contains(
             abstract: $offset,
         );
     }
 
-    public function offsetGet($offset)
+    /**
+     * ArrayAccess: Retrieve an item from the Container, if possible.
+     *
+     * @param string $offset
+     *
+     * @return mixed
+     *
+     * @throws BindingResolutionException
+     */
+    public function offsetGet($offset): mixed
     {
         return $this->make(
             abstract: $offset,
         );
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * ArrayAccess: Bind a new item into the Container
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function offsetSet($offset, $value): void
     {
         $this->bind(
             abstract: $offset,
@@ -165,10 +290,46 @@ class Container implements ArrayAccess
         );
     }
 
-    public function offsetUnset($offset)
+    /**
+     * ArrayAccess: Remove an item from the Container
+     *
+     * @param string $offset
+     *
+     * @return void
+     */
+    public function offsetUnset($offset): void
     {
         $this->remove(
             abstract: $offset,
+        );
+    }
+
+    /**
+     * ContainerInterface: Retrieve an item from the Container, if possible.
+     *
+     * @param string $id
+     *
+     * @return mixed
+     *
+     * @throws BindingResolutionException
+     */
+    public function get(string $id): mixed
+    {
+        return $this->make(
+            abstract: $id,
+        );
+    }
+
+    /**
+     * ContainerInterface: Check if the Container contains an item.
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function has(string $id): bool
+    {
+        return $this->contains(
+            abstract: $id,
         );
     }
 }

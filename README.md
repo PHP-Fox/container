@@ -1,17 +1,11 @@
 # PHP-Fox Container
 
 <!-- BADGES_START -->
-[![Latest Version][badge-release]][packagist]
-[![PHP Version][badge-php]][php]
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/php-fox/container)
 ![tests](https://github.com/PHP-Fox/container/workflows/run-tests/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/phpfox/container.svg?style=flat-square)](https://packagist.org/packages/phpfox/container)
+![GitHub](https://img.shields.io/github/license/php-fox/container)
 
-
-[badge-release]: https://img.shields.io/packagist/v/phpfox/container.svg?style=flat-square&label=release
-[badge-php]: https://img.shields.io/packagist/php-v/phpfox/container.svg?style=flat-square
-
-[packagist]: https://packagist.org/packages/phpfox/container
-[php]: https://php.net
 <!-- BADGES_END -->
 
 This is the repository for the DI Container used in the PHP-Fox framework.

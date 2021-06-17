@@ -195,6 +195,34 @@ it('throws a BindingResolutionException when a target class cannot be instantiat
     exceptionClass: BindingResolutionException::class
 );
 
+it('implements ArrayAccess properly', function () {
+    $container = Container::getInstance();
+    $container->flush();
+
+    // Add ArrayMailer to container
+    $container[ArrayMailer::class] = ArrayMailer::class;
+
+    // Check it exists
+    assertTrue(
+        condition: isset($container[ArrayMailer::class]),
+    );
+
+    // Check we can get it from the container
+    assertInstanceOf(
+        expected: ArrayMailer::class,
+        actual: $container[ArrayMailer::class],
+    );
+
+    // Check we can remove it
+    unset($container[ArrayMailer::class]);
+
+    assertFalse(
+        condition: isset($container[ArrayMailer::class]),
+    );
+
+});
+
+
 interface MailerInterface
 {
     public function send($message);

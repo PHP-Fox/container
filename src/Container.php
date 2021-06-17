@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace PHPFox\Container;
 
+use ArrayAccess;
 use Closure;
 use PHPFox\Container\Exceptions\BindingResolutionException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 
-class Container
+class Container implements ArrayAccess
 {
     /** @var static */
     protected static Container $instance;
@@ -83,6 +84,11 @@ class Container
         return array_key_exists($abstract, $this->bindings);
     }
 
+    public function remove(string $abstract): void
+    {
+        unset($this->bindings[$abstract]);
+    }
+
     public function build(Closure|string $concrete): mixed
     {
         if ($concrete instanceof Closure) {
@@ -135,5 +141,34 @@ class Container
     {
         $this->bindings = [];
         $this->instances = [];
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return $this->has(
+            abstract: $offset,
+        );
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->make(
+            abstract: $offset,
+        );
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->bind(
+            abstract: $offset,
+            concrete: $value,
+        );
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->remove(
+            abstract: $offset,
+        );
     }
 }

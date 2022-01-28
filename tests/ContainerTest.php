@@ -180,7 +180,7 @@ it('throws a BindingResolutionException when a target class does not exist', fun
         abstract: FakeBinding::class,
     );
 })->throws(
-    exceptionClass: BindingResolutionException::class
+    BindingResolutionException::class
 );
 
 it('throws a BindingResolutionException when a target class cannot be instantiated', function () {
@@ -192,7 +192,7 @@ it('throws a BindingResolutionException when a target class cannot be instantiat
     );
 
 })->throws(
-    exceptionClass: BindingResolutionException::class
+    BindingResolutionException::class
 );
 
 it('implements ArrayAccess properly', function () {

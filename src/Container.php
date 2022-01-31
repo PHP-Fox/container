@@ -17,9 +17,9 @@ class Container implements ArrayAccess, ContainerInterface
     /**
      * The Container Instance
      *
-     * @var Container
+     * @var Container|null
      */
-    protected static Container $instance;
+    protected static ?Container $instance = null;
 
     /**
      * The Container bindings, things that have been added to our container.
@@ -55,7 +55,7 @@ class Container implements ArrayAccess, ContainerInterface
      */
     public static function getInstance(): static
     {
-        if (! isset(static::$instance)) {
+        if (null === static::$instance) {
             static::$instance = new static();
         }
 
